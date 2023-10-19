@@ -1,0 +1,198 @@
+{
+	"info": {
+		"_postman_id": "1cca0896-4875-4701-a01b-ddc47585e1cd",
+		"name": "Crypto Currency API",
+		"description": "Hello, this is a simple collection that shows some of my skills, in Postman\n\nMy work based on [Coinpaprika](https://api.coinpaprika.com/#tag/Coins/paths/~1coins/get)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GlobalInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "333550ff-fbd9-42c3-8d4f-f7874e3e048d",
+						"exec": [
+							"pm.test(\"Verify market cup \", () => {\r",
+							"    let responseData = pm.response.json();\r",
+							"    pm.expect(responseData[\"market_cap_usd\"]).a(\"number\");\r",
+							"    pm.expect(responseData[\"market_cap_usd\"]).above(11100000000);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "8bbd124e-536e-406f-bd3c-e37b6ae193ae",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{BasePath}}/v1/global"
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllCoins",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bd6dc360-1220-43f5-bef4-847017068d1c",
+						"exec": [
+							"var amoutOfCoins = pm.response.json();\r",
+							"amoutOfCoins = amoutOfCoins.length;\r",
+							"console.log(\"Amount of all listed coins: \" + amoutOfCoins)\r",
+							"\r",
+							"pm.test(\"Status code is success\", () => {\r",
+							"    pm.response.to.be.success;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "3c56571e-5040-428f-9aef-bca9b0baa457",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{BasePath}}/v1/coin"
+			},
+			"response": []
+		},
+		{
+			"name": "CheckCoinPrice",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c02c0394-8b42-4525-93b8-6d60119f1414",
+						"exec": [
+							"pm.test(\"Response time is acceptable\", () => {\r",
+							"    pm.expect(pm.response.responseTime).below(100);\r",
+							"})\r",
+							"\r",
+							"pm.test(\"Status code is okay\", () => {\r",
+							"    pm.response.to.be.success;\r",
+							"})\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"var startDate = new Date();\r",
+							"var endDate = new Date();\r",
+							"\r",
+							"/*When we want lowest price from last month (Starter plan)\r",
+							"startDate.setDate(startDate.getDate() - 30);\r",
+							"endDate = endDate.toISOString().slice(0,10);\r",
+							"startDate = startDate.toISOString().slice(0,10) // Convert object Date to correct Date Format, then take first 10 characters\r",
+							"*/\r",
+							"\r",
+							"//When we want lowest price from yesterday\r",
+							"startDate.setDate(startDate.getDate());\r",
+							"endDate = endDate.toISOString().slice(0,10);\r",
+							"startDate = startDate.toISOString().slice(0,10)\r",
+							"\r",
+							"//Send request to get the lowest price in out specifed time\r",
+							"var urlToHistoryRequest = 'https://api.coinpaprika.com/v1/coins/' + pm.collectionVariables.get(\"cryptoById\")\r",
+							"+ \"/ohlcv/historical?start=\" + startDate + \"&end=\" + endDate;\r",
+							"\r",
+							"pm.sendRequest({\r",
+							"    url: urlToHistoryRequest,\r",
+							"    method: \"GET\",\r",
+							"\r",
+							"},function (err, res) {\r",
+							"        pm.collectionVariables.set(\"responseHistoryReq\", res.text());        \r",
+							"    })\r",
+							"\r",
+							"var responseHistory = JSON.parse(pm.collectionVariables.get(\"responseHistoryReq\"));\r",
+							"\r",
+							"if(jsonData[0].open < responseHistory[0].low){\r",
+							"    console.log(\"Price now is lower than the lowest price in the last choosen peroid time\")\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "11c8b9f9-2a01-4d96-9a9a-00db6d190f5d",
+						"exec": [
+							"console.clear()"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"id": "1b490569-c537-4230-976b-3e0c75795e86",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{BasePath}}v1/coins/{{cryptoById}}/ohlcv/{{day}}"
+			},
+			"response": []
+		},
+		{
+			"name": "InfoAboutSpecialCoin",
+			"id": "538705ba-9c9f-4f9a-9025-3ee6eca222a0",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{BasePath}}v1/coins/{{cryptoById}}"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "8ea94adf-4908-4961-9b54-b10b48dd77a2",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2c7c8ac8-9eea-41c0-8afc-049c7197ff82",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "cryptoById",
+			"value": "Put Your Crypto"
+		},
+		{
+			"key": "BasePath",
+			"value": "https://api.coinpaprika.com/"
+		},
+		{
+			"key": "day",
+			"value": "From what date, you want to have information"
+		},
+		{
+			"key": "responseHistoryReq",
+			"value": ""
+		}
+	]
+}
