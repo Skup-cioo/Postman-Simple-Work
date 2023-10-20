@@ -1,0 +1,624 @@
+{
+	"info": {
+		"_postman_id": "5a08bceb-c216-4121-9ef9-2994b7d096ee",
+		"name": "Simple Collection",
+		"description": "Hello, this is a simple collection that shows some of my skills, in Postman\n\nMy work based on [Postman-Complete-Guide-API-Testing/simple-grocery-store-api.md at main · vdespa/Postman-Complete-Guide-API-Testing (github.com)](https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md#Status)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "22736509"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "checkStatus",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Verify response is success\", () => {\r",
+									"    pm.response.to.be.success\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify status field has correct text \", () => {\r",
+									"    let responseAsJSON = pm.response.json();\r",
+									"    pm.expect(responseAsJSON[\"status\"]).equal(\"UP\")\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify status field is String Type\", () => {\r",
+									"    let responseAsJSON = pm.response.json();\r",
+									"    pm.expect(responseAsJSON[\"status\"]).to.a(\"String\")\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/status",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AllAvailableProducts",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"var productId;\r",
+									"var name = pm.collectionVariables.get(\"nameOfProduct\");\r",
+									"\r",
+									"pm.test(\"Verify amount of products, amount should be equal results param\", () => {\r",
+									"    let arrayLength = jsonData.length;\r",
+									"    let queryParams = pm.request.url.query; \r",
+									"    let amountFromResultsParam = parseInt(queryParams.get(\"results\"));\r",
+									"    pm.expect(arrayLength).equal(amountFromResultsParam);\r",
+									"})\r",
+									"\r",
+									"//searching product by name \r",
+									"for(let i = 0; i < jsonData.length; i++){ \r",
+									"    if(jsonData[i].name === name){\r",
+									"        productId = jsonData[i].id;\r",
+									"        console.log(\"It's okay I found searched product\");\r",
+									"    }\r",
+									"}\r",
+									"pm.collectionVariables.set(\"productId\", productId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/products?category=coffee&available=true&results=0",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "coffee"
+								},
+								{
+									"key": "available",
+									"value": "true"
+								},
+								{
+									"key": "results",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateANewClient",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"apiToken\", jsonData[\"accessToken\"]); // get necessary token "
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"clientName\": \"{{$randomFirstName}}\",\r\n   \"clientEmail\": \"{{$randomEmail}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basePath}}/api-clients",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"api-clients"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateBasket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.collectionVariables.set(\"cartId\", jsonData[\"cartId\"]);\r",
+									"\r",
+									"pm.test(\"Verify status field equals true and its type is Boolean\", () =>\r",
+									"{\r",
+									"    let status = pm.response.json();\r",
+									"    pm.expect(status.created).to.be.true\r",
+									"    pm.expect(status.created).to.be.a(\"Boolean\")\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basePath}}/carts",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = JSON.parse(responseBody);\r",
+									"\r",
+									"if(pm.response.code === 400 && jsonData[\"error\"] === \"The quantity requested is not available in stock.\"){\r",
+									"    pm.sendRequest({\r",
+									"        url: \"https://simple-grocery-store-api.glitch.me/products/4643\",\r",
+									"        method: \"GET\",\r",
+									"    }, function (err, res) {\r",
+									"        pm.collectionVariables.set(\"responseFromNewGet\", res.text());        \r",
+									"        }\r",
+									"    )\r",
+									"}\r",
+									"\r",
+									"var re = pm.collectionVariables.get(\"responseFromNewGet\");\r",
+									"re = JSON.parse(re);\r",
+									"console.log(\"Available quantity of this product equals\" + re[\"current-stock\"]);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"productId\" : 2177,\r\n    \"quantity\" : 44\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}"
+								},
+								{
+									"key": "itemId",
+									"value": "73465838"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddItemToBasket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"var anotherProductId = pm.collectionVariables.get(\"anotherProductId\");\r",
+									"var cartId = pm.variables.get(\"cartId\");\r",
+									"pm.collectionVariables.set(\"itemId\", jsonData[\"itemId\"]);\r",
+									"\r",
+									"// if status code equals 400 we will send request to add a other product to the basket\r",
+									"if(pm.response.code === 400){\r",
+									"    console.log(\"We will send the request\");\r",
+									"    pm.sendRequest(\r",
+									"        {\r",
+									"            url: \"https://simple-grocery-store-api.glitch.me/carts/\" + cartId + \"/items\",\r",
+									"            method: 'POST',\r",
+									"            body: {\r",
+									"                    mode: 'raw',\r",
+									"                    raw: JSON.stringify(\r",
+									"                            {\r",
+									"                            productId: anotherProductId\r",
+									"                            }\r",
+									"                    ),\r",
+									"                    options: {\r",
+									"\t\t\t\t\t\t\t\t\"raw\": {\r",
+									"\t\t\t\t\t\t\t\t\t\"language\": \"json\"\r",
+									"\t\t\t\t\t\t\t\t}\r",
+									"                    }, function (err, res) {\r",
+									"                            console.log(res);}\r",
+									"            }\r",
+									"    });\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"console.clear();"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"productId\": {{productId}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId/items",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChangeQuantity",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"quantity\": 10\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}"
+								},
+								{
+									"key": "itemId",
+									"value": "{{itemId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AllNotAvailableProducts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/products?category={{category}}&available=false",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"products"
+							],
+							"query": [
+								{
+									"key": "category",
+									"value": "{{category}}"
+								},
+								{
+									"key": "available",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SingleProduct",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/products/:productId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"products",
+								":productId"
+							],
+							"variable": [
+								{
+									"key": "productId",
+									"value": "{{productId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "VerifyWrongBasket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"status code is one of 4xx \",function(){\r",
+									"    pm.response.to.be.error\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckCorrectBasket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Check responseTime is under 200 ms\", function(){\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(200)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ItemFromBasket",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{basePath}}/carts/:cartId/items/:itemId",
+							"host": [
+								"{{basePath}}"
+							],
+							"path": [
+								"carts",
+								":cartId",
+								"items",
+								":itemId"
+							],
+							"variable": [
+								{
+									"key": "cartId",
+									"value": "{{cartId}}"
+								},
+								{
+									"key": "itemId",
+									"value": "350314908"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "basePath",
+			"value": "https://simple-grocery-store-api.glitch.me"
+		},
+		{
+			"key": "apiToken",
+			"value": "Token"
+		},
+		{
+			"key": "cartId",
+			"value": "CartId"
+		},
+		{
+			"key": "itemId",
+			"value": "ItemId"
+		},
+		{
+			"key": "productId",
+			"value": "ProductId"
+		},
+		{
+			"key": "nameOfProduct",
+			"value": "nameOfProduct",
+			"type": "string"
+		},
+		{
+			"key": "category",
+			"value": "category"
+		},
+		{
+			"key": "anotherProductId",
+			"value": "Another product will be add if first is already ",
+			"type": "string"
+		},
+		{
+			"key": "responseZPosredniego",
+			"value": "Response From another request"
+		}
+	]
+}
