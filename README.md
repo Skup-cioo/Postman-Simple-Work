@@ -1,10 +1,13 @@
 # Introduction
-Hello, my name is Kacper. This is a simple sample of my capabilities using Postman
+Welcome to my GitHub repository showcasing my skills using Postman!
 
-In this repository we will find two Postman collections. I created some tests and logic in both collections. Take a look if you want.
-  -Simple Collection.postman_collection.json - https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md -> That API I used.
+Inside this repository, you'll discover two Postman collections, each with carefully crafted tests and logic:
+
+- *Simple Collection*: This collection interacts with the [Simple Grocery Store API](https://github.com/vdespa/Postman-Complete-Guide-API-Testing/blob/main/simple-grocery-store-api.md), demonstrating basic functionality.
   
-  -Basic_Crypto_Collection.json - https://api.coinpaprika.com/#tag/Coins/paths/~1coins/get -> Here we can send several GET requests and get basic cryptocurrency data.
+- *Basic Crypto Collection*: Explore this collection to send GET requests and retrieve fundamental cryptocurrency data from [Coinpaprika API](https://api.coinpaprika.com/#tag/Coins/paths/~1coins/get).
+
+Feel free to explore and utilize these collections to understand my capabilities with Postman.
 
 
 # Screens 
